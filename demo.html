@@ -1,0 +1,2719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI巡检 — 智能拍照巡检系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+/* Swiss Modern Design System */
+/* AI巡检系统 - 智能拍照巡检 */
+
+:root {
+  /* 颜色系统 - Swiss风格以黑白灰+强调色为主 */
+  --color-black: #0a0a0a;
+  --color-gray-900: #1a1a1a;
+  --color-gray-800: #2a2a2a;
+  --color-gray-700: #3a3a3a;
+  --color-gray-600: #555555;
+  --color-gray-500: #777777;
+  --color-gray-400: #999999;
+  --color-gray-300: #bbbbbb;
+  --color-gray-200: #e0e0e0;
+  --color-gray-100: #f0f0f0;
+  --color-gray-50: #f8f8f8;
+  --color-white: #ffffff;
+  
+  /* 强调色 - Swiss红 */
+  --accent-primary: #e63946;
+  --accent-red: #e63946;
+  --accent-blue: #1d3557;
+  --accent-green: #2a9d8f;
+  --accent-orange: #f4a261;
+  --accent-yellow: #e9c46a;
+  
+  /* 语义色 */
+  --color-success: #2a9d8f;
+  --color-warning: #f4a261;
+  --color-danger: #e63946;
+  --color-info: #457b9d;
+  
+  /* 排版 */
+  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+  
+  /* 间距系统 - 8px网格 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  
+  /* 圆角 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* 阴影 */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.16);
+  
+  /* 过渡 */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* 重置样式 */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-gray-50);
+  color: var(--color-black);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* 导航栏 */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-7);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-200);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.logo {
+  color: var(--accent-primary);
+  display: flex;
+}
+
+.brand-text {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.brand-logo {
+  height: 36px;
+  width: auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.nav-link {
+  padding: var(--space-2) var(--space-4);
+  text-decoration: none;
+  color: var(--color-gray-600);
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  color: var(--color-black);
+  background: var(--color-gray-100);
+}
+
+.nav-link.active {
+  color: var(--color-black);
+  background: var(--color-gray-100);
+}
+
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--accent-primary);
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+/* 主内容 */
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-7);
+}
+
+/* 页面切换 */
+.page {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== 首页 ==================== */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-8);
+  align-items: center;
+  padding: var(--space-9) 0;
+}
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--accent-primary);
+  margin-bottom: var(--space-4);
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-5);
+}
+
+.hero-title .highlight {
+  color: var(--accent-primary);
+}
+
+.hero-desc {
+  font-size: 1.25rem;
+  color: var(--color-gray-600);
+  line-height: 1.7;
+  margin-bottom: var(--space-6);
+  max-width: 480px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--space-4);
+}
+
+/* 按钮系统 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.btn-primary:hover {
+  background: var(--color-gray-800);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  color: var(--color-black);
+  border: 1px solid var(--color-gray-300);
+}
+
+.btn-secondary:hover {
+  border-color: var(--color-black);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-black);
+  border: 1px solid var(--color-gray-300);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-black);
+  background: var(--color-gray-50);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-gray-600);
+}
+
+.btn-ghost:hover {
+  color: var(--color-black);
+  background: var(--color-gray-100);
+}
+
+.btn-sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8rem;
+}
+
+/* Hero可视化卡片 */
+.hero-visual {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.visual-card {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid var(--color-gray-200);
+}
+
+.visual-header {
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-100);
+  display: flex;
+  gap: var(--space-2);
+}
+
+.visual-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-400);
+}
+
+.visual-dot:first-child { background: var(--accent-red); }
+.visual-dot:nth-child(2) { background: var(--accent-orange); }
+.visual-dot:nth-child(3) { background: var(--color-success); }
+
+.visual-content {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.visual-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  animation: slideIn 0.5s ease forwards;
+  opacity: 0;
+}
+
+.visual-item:nth-child(1) { animation-delay: 0.1s; }
+.visual-item:nth-child(2) { animation-delay: 0.2s; }
+.visual-item:nth-child(3) { animation-delay: 0.3s; }
+.visual-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.visual-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.visual-icon.check {
+  background: var(--color-success);
+  color: var(--color-white);
+}
+
+.visual-icon.warn {
+  background: var(--accent-orange);
+  color: var(--color-white);
+}
+
+.visual-icon.pending {
+  background: var(--color-gray-300);
+  color: var(--color-gray-600);
+}
+
+.visual-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.visual-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.visual-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.visual-status.success { color: var(--color-success); }
+.visual-status.warning { color: var(--accent-orange); }
+.visual-status.pending { color: var(--color-gray-500); }
+
+/* 统计区域 */
+.stats-section {
+  padding: var(--space-8) 0;
+  border-top: 1px solid var(--color-gray-200);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+.stat-card {
+  text-align: center;
+  padding: var(--space-5);
+}
+
+.stat-number {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: var(--space-2);
+}
+
+.stat-unit {
+  font-size: 1.5rem;
+  color: var(--color-gray-500);
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--color-gray-600);
+  font-weight: 500;
+}
+
+/* 功能区域 */
+.features-section,
+.scenarios-section {
+  padding: var(--space-9) 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-7);
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-3);
+}
+
+.section-desc {
+  font-size: 1.1rem;
+  color: var(--color-gray-600);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-5);
+}
+
+.feature-card {
+  background: var(--color-white);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  transition: all var(--transition-base);
+}
+
+.feature-card:hover {
+  border-color: var(--color-black);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-5);
+  color: var(--color-black);
+}
+
+.feature-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.feature-desc {
+  font-size: 0.9rem;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+}
+
+/* 场景区域 */
+.scenarios-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+}
+
+.scenario-card {
+  background: var(--color-white);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.scenario-card:hover {
+  border-color: var(--accent-primary);
+}
+
+.scenario-number {
+  font-family: var(--font-mono);
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--color-gray-100);
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  line-height: 1;
+}
+
+.scenario-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+}
+
+.scenario-desc {
+  font-size: 0.9rem;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.scenario-tags {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.tag {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+/* 工作流程区域 */
+.workflow-section {
+  padding: var(--space-9) 0;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.workflow-diagram {
+  background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-white) 100%);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-200);
+  padding: var(--space-7);
+  position: relative;
+}
+
+/* 中心节点 */
+.workflow-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-6);
+}
+
+.center-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  background: linear-gradient(135deg, #7c5cff 0%, #a78bfa 100%);
+  color: var(--color-white);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 32px rgba(124, 92, 255, 0.3);
+}
+
+.center-icon {
+  font-size: 1.5rem;
+}
+
+/* 流程卡片 */
+.workflow-flows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.flow-track {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  border: 1px solid var(--color-gray-200);
+  transition: all var(--transition-base);
+}
+
+.flow-track:hover {
+  border-color: var(--color-gray-400);
+  box-shadow: var(--shadow-md);
+}
+
+.flow-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.flow-number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-gray-400);
+}
+
+.flow-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.flow-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.flow-inspect .flow-tag {
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--accent-red);
+}
+
+.flow-remind .flow-tag {
+  background: rgba(244, 162, 97, 0.1);
+  color: var(--accent-orange);
+}
+
+.flow-dispatch .flow-tag {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+/* 流程步骤 */
+.flow-steps {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.flow-step {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  transition: all var(--transition-fast);
+}
+
+.flow-step.trigger {
+  background: linear-gradient(135deg, #7c5cff 0%, #a78bfa 100%);
+  color: var(--color-white);
+}
+
+.flow-step.action {
+  background: #4f8cff;
+  color: var(--color-white);
+}
+
+.flow-step.result {
+  background: var(--color-gray-100);
+  color: var(--color-gray-700);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.85rem;
+}
+
+.flow-step.result.final {
+  background: linear-gradient(135deg, #e8f4f8 0%, #d4edda 100%);
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+.step-icon {
+  font-size: 1.25rem;
+}
+
+.step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.step-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.step-hint {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.flow-arrow {
+  color: var(--color-gray-400);
+  font-size: 1.25rem;
+  padding: 0 var(--space-1);
+}
+
+.flow-step-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-gray-300);
+}
+
+.step-arrow-down {
+  color: var(--color-gray-400);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* 底部说明 */
+.workflow-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border-radius: var(--radius-md);
+  border: 1px solid #fcd34d;
+}
+
+.note-icon {
+  font-size: 1.25rem;
+}
+
+.workflow-note p {
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+  margin: 0;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .flow-steps {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .flow-arrow {
+    transform: rotate(90deg);
+    text-align: center;
+  }
+  
+  .flow-step-group {
+    width: 100%;
+  }
+}
+
+/* ==================== 任务列表页 ==================== */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-gray-600);
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.count-badge {
+  background: var(--accent-primary);
+  color: var(--color-white);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.filter-group {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--color-gray-100);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+}
+
+.filter-btn {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.filter-btn:hover {
+  color: var(--color-black);
+}
+
+.filter-btn.active {
+  background: var(--color-white);
+  color: var(--color-black);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 任务卡片 */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.task-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  background: var(--color-white);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  transition: all var(--transition-fast);
+}
+
+.task-card:hover {
+  border-color: var(--color-gray-400);
+}
+
+.task-card.urgent {
+  border-left: 4px solid var(--accent-red);
+}
+
+.task-card.completed {
+  opacity: 0.7;
+}
+
+.task-priority {
+  padding: var(--space-1) var(--space-3);
+  background: var(--accent-red);
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.task-priority.normal {
+  background: var(--color-gray-600);
+}
+
+.task-priority.done {
+  background: var(--color-success);
+}
+
+.task-content {
+  flex: 1;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.task-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.task-time {
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+}
+
+.task-location {
+  font-size: 0.9rem;
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-3);
+}
+
+.task-items {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.task-item {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  color: var(--color-gray-700);
+}
+
+.task-result {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.result-badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.result-badge.success {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+/* ==================== 拍照巡检页 ==================== */
+
+.inspect-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.inspect-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.inspect-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  padding: var(--space-4);
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-gray-200);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+.progress-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  white-space: nowrap;
+}
+
+.inspect-main {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.inspect-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.current-item {
+  background: var(--color-white);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.item-badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-3);
+}
+
+.item-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+}
+
+.item-desc {
+  font-size: 0.95rem;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+}
+
+.item-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9rem;
+  color: var(--color-gray-700);
+}
+
+.check-icon {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-gray-300);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--color-gray-400);
+}
+
+/* 上传区域 */
+.upload-area {
+  background: var(--color-white);
+  border: 2px dashed var(--color-gray-300);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.upload-area:hover {
+  border-color: var(--accent-primary);
+  background: var(--color-gray-50);
+}
+
+.upload-icon {
+  color: var(--color-gray-400);
+  margin-bottom: var(--space-4);
+}
+
+.upload-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.upload-hint {
+  font-size: 0.85rem;
+  color: var(--color-gray-500);
+}
+
+/* AI面板 */
+.ai-panel {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+}
+
+.ai-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.ai-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--color-gray-100);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  overflow: hidden;
+}
+
+.ai-name {
+  font-weight: 600;
+  flex: 1;
+}
+
+.ai-status {
+  font-size: 0.75rem;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.ai-status.online {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+.ai-messages {
+  flex: 1;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.ai-message {
+  background: var(--color-gray-50);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.ai-message ul {
+  margin-top: var(--space-3);
+  padding-left: var(--space-5);
+}
+
+.ai-message li {
+  margin-bottom: var(--space-2);
+  color: var(--color-gray-600);
+}
+
+.ai-input {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.ai-text-input {
+  flex: 1;
+  padding: var(--space-3);
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  transition: border-color var(--transition-fast);
+}
+
+.ai-text-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.ai-send-btn {
+  width: 40px;
+  height: 40px;
+  background: var(--color-black);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.ai-send-btn:hover {
+  background: var(--color-gray-800);
+}
+
+/* 巡检导航 */
+.inspect-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+}
+
+.nav-dots {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-gray-300);
+  transition: all var(--transition-fast);
+}
+
+.nav-dot.active {
+  background: var(--accent-primary);
+  width: 24px;
+}
+
+.nav-dot.completed {
+  background: var(--color-success);
+}
+
+/* ==================== 管理大盘页 ==================== */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-6);
+}
+
+.date-selector {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--color-gray-100);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+}
+
+.date-btn {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-gray-600);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.date-btn:hover {
+  color: var(--color-black);
+}
+
+.date-btn.active {
+  background: var(--color-white);
+  color: var(--color-black);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 仪表盘统计卡片 */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.dash-stat-card {
+  background: var(--color-white);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.dash-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dash-stat-icon.blue {
+  background: rgba(29, 53, 87, 0.1);
+  color: var(--accent-blue);
+}
+
+.dash-stat-icon.orange {
+  background: rgba(244, 162, 97, 0.1);
+  color: var(--accent-orange);
+}
+
+.dash-stat-icon.red {
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--accent-red);
+}
+
+.dash-stat-icon.green {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+.dash-stat-info {
+  flex: 1;
+}
+
+.dash-stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dash-stat-label {
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
+}
+
+.dash-stat-trend {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-100);
+  color: var(--color-gray-600);
+}
+
+.dash-stat-trend.up {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+.dash-stat-trend.down {
+  background: rgba(42, 157, 143, 0.1);
+  color: var(--color-success);
+}
+
+/* 仪表盘主区域 */
+.dashboard-main {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--space-5);
+}
+
+.dashboard-left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.dashboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.panel {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-gray-200);
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.panel-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.panel-action {
+  font-size: 0.85rem;
+  color: var(--accent-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.alert-count {
+  background: var(--accent-red);
+  color: var(--color-white);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* 门店列表 */
+.store-list {
+  padding: var(--space-4) var(--space-5);
+}
+
+.store-item {
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.store-item:last-child {
+  border-bottom: none;
+}
+
+.store-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.store-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.store-status {
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+}
+
+.store-progress {
+  height: 6px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.store-progress-bar {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
+}
+
+.store-progress.complete .store-progress-bar {
+  background: var(--color-success);
+}
+
+.store-progress.warning .store-progress-bar {
+  background: var(--accent-orange);
+}
+
+/* 图表区域 */
+.chart-container {
+  padding: var(--space-5);
+}
+
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 180px;
+  gap: var(--space-4);
+}
+
+.bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+}
+
+.bar {
+  flex: 1;
+  width: 100%;
+  max-width: 48px;
+  background: var(--color-gray-200);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all var(--transition-base);
+}
+
+.bar.active {
+  background: var(--accent-primary);
+}
+
+.bar:hover {
+  background: var(--accent-blue);
+}
+
+.bar-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-600);
+}
+
+/* 预警列表 */
+.alert-list {
+  padding: var(--space-3) var(--space-5);
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+.alert-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.alert-item.critical .alert-icon {
+  background: var(--accent-red);
+  color: var(--color-white);
+}
+
+.alert-item.warning .alert-icon {
+  background: var(--accent-orange);
+  color: var(--color-white);
+}
+
+.alert-item.info .alert-icon {
+  background: var(--color-gray-300);
+  color: var(--color-gray-700);
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.alert-time {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+}
+
+/* 类别列表 */
+.category-list {
+  padding: var(--space-4) var(--space-5);
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.category-item:last-child {
+  border-bottom: none;
+}
+
+.category-color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.category-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.category-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  
+  .hero-content {
+    order: 1;
+  }
+  
+  .hero-visual {
+    order: 0;
+    justify-content: center;
+    margin-bottom: var(--space-6);
+  }
+  
+  .hero-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .hero-actions {
+    justify-content: center;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-main {
+    grid-template-columns: 1fr;
+  }
+  
+  .inspect-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  
+  .nav-links {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .features-grid,
+  .scenarios-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid,
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .main-content {
+    padding: var(--space-4);
+  }
+}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏 -->
+    <nav class="nav">
+      <div class="nav-brand">
+        <img src="logo-qf-1.CCS1gXUf.png" alt="智书企飞" class="brand-logo">
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active" data-page="home">首页</a>
+        <a href="#" class="nav-link" data-page="tasks">任务列表</a>
+        <a href="#" class="nav-link" data-page="inspect">拍照巡检</a>
+        <a href="#" class="nav-link" data-page="dashboard">管理大盘</a>
+      </div>
+      <div class="nav-user">
+        <div class="user-avatar">张</div>
+        <span class="user-name">张明 · 巡检员</span>
+      </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+      <!-- 首页 -->
+      <section id="page-home" class="page active">
+        <div class="hero">
+          <div class="hero-content">
+            <div class="hero-label">智能巡检解决方案</div>
+            <h1 class="hero-title">
+              拍照上传<br/>
+              <span class="highlight">AI帮你审核</span>
+            </h1>
+            <p class="hero-desc">
+              释放审核人力，仅需二次确认。基于人工智能多模态技术，
+              让零售、餐饮、仓储的安全合规检查变得简单高效。
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" onclick="navigateTo('inspect')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                开始巡检
+              </button>
+              <button class="btn btn-secondary" onclick="navigateTo('tasks')">
+                查看任务
+              </button>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="visual-card">
+              <div class="visual-header">
+                <div class="visual-dot"></div>
+                <div class="visual-dot"></div>
+                <div class="visual-dot"></div>
+              </div>
+              <div class="visual-content">
+                <div class="visual-item">
+                  <div class="visual-icon check">✓</div>
+                  <div class="visual-text">
+                    <span class="visual-label">灭火器检查</span>
+                    <span class="visual-status success">合格</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon check">✓</div>
+                  <div class="visual-text">
+                    <span class="visual-label">应急出口状态</span>
+                    <span class="visual-status success">合格</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon warn">!</div>
+                  <div class="visual-text">
+                    <span class="visual-label">消防栓封条</span>
+                    <span class="visual-status warning">需检查</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon pending">○</div>
+                  <div class="visual-text">
+                    <span class="visual-label">货架稳定性</span>
+                    <span class="visual-status pending">待检查</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="stats-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">98.5<span class="stat-unit">%</span></div>
+              <div class="stat-label">识别准确率</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">3<span class="stat-unit">秒</span></div>
+              <div class="stat-label">平均审核时间</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">80<span class="stat-unit">%</span></div>
+              <div class="stat-label">人力成本节省</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">全天候服务</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 功能介绍 -->
+        <div class="features-section">
+          <div class="section-header">
+            <h2 class="section-title">核心功能</h2>
+            <p class="section-desc">一站式智能巡检解决方案</p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">拍照即巡检</h3>
+              <p class="feature-desc">员工只需拍照上传，AI自动识别并完成所有检查项目评估</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">智能审核</h3>
+              <p class="feature-desc">AI自动判断合规性，实时给出审核结果和修改建议</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">周期性任务</h3>
+              <p class="feature-desc">支持每日、每周自动创建巡检任务，确保不遗漏</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <line x1="18" y1="20" x2="18" y2="10"/>
+                  <line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">管理大盘</h3>
+              <p class="feature-desc">可视化仪表盘，一览所有门店巡检情况和风险预警</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 实现概览 -->
+        <div class="workflow-section">
+          <div class="section-header">
+            <h2 class="section-title">实现概览</h2>
+            <p class="section-desc">基于 Aily + Base 的智能巡检系统架构</p>
+          </div>
+          
+          <div class="workflow-diagram">
+            <!-- 中心节点 -->
+            <div class="workflow-center">
+              <div class="center-node">
+                <div class="center-icon">🤖</div>
+                <span>AI 店铺巡检助手</span>
+              </div>
+            </div>
+
+            <!-- 三条流程线 -->
+            <div class="workflow-flows">
+              <!-- 流程1: 店铺巡检 -->
+              <div class="flow-track flow-inspect">
+                <div class="flow-header">
+                  <span class="flow-number">01</span>
+                  <h3 class="flow-title">店铺巡检</h3>
+                  <span class="flow-tag">核心流程</span>
+                </div>
+                <div class="flow-steps">
+                  <div class="flow-step trigger">
+                    <div class="step-icon">🎯</div>
+                    <div class="step-content">
+                      <span class="step-label">意图判断执行技能</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step action">
+                    <div class="step-icon">📷</div>
+                    <div class="step-content">
+                      <span class="step-label">店铺巡检</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step-group">
+                    <div class="flow-step result">
+                      <span class="step-label">AI 识别巡检项</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result">
+                      <span class="step-label">AI 巡检图片是否合规</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result final">
+                      <span class="step-label">发出巡检结果</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 流程2: 每日提醒 -->
+              <div class="flow-track flow-remind">
+                <div class="flow-header">
+                  <span class="flow-number">02</span>
+                  <h3 class="flow-title">每日提醒</h3>
+                  <span class="flow-tag">自动化</span>
+                </div>
+                <div class="flow-steps">
+                  <div class="flow-step trigger">
+                    <div class="step-icon">⏰</div>
+                    <div class="step-content">
+                      <span class="step-label">自动任务触发</span>
+                      <span class="step-hint">定时执行</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step action">
+                    <div class="step-icon">🔔</div>
+                    <div class="step-content">
+                      <span class="step-label">每日提醒</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step-group">
+                    <div class="flow-step result">
+                      <span class="step-label">获取当前未完成任务</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result">
+                      <span class="step-label">获取当前任务店铺</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result">
+                      <span class="step-label">获取任务店铺巡检员</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result final">
+                      <span class="step-label">批量发出提醒卡片</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 流程3: 任务派发 -->
+              <div class="flow-track flow-dispatch">
+                <div class="flow-header">
+                  <span class="flow-number">03</span>
+                  <h3 class="flow-title">任务派发</h3>
+                  <span class="flow-tag">Webhook</span>
+                </div>
+                <div class="flow-steps">
+                  <div class="flow-step trigger">
+                    <div class="step-icon">🚀</div>
+                    <div class="step-content">
+                      <span class="step-label">Webhook 任务触发</span>
+                      <span class="step-hint">Base 自动化</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step action">
+                    <div class="step-icon">📤</div>
+                    <div class="step-content">
+                      <span class="step-label">任务派发</span>
+                    </div>
+                  </div>
+                  <div class="flow-arrow">→</div>
+                  <div class="flow-step-group">
+                    <div class="flow-step result">
+                      <span class="step-label">获取新任务列表</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result">
+                      <span class="step-label">获取新任务店铺</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result">
+                      <span class="step-label">获取新任务巡检员</span>
+                    </div>
+                    <div class="step-arrow-down">↓</div>
+                    <div class="flow-step result final">
+                      <span class="step-label">批量发出任务卡片</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 底部说明 -->
+            <div class="workflow-note">
+              <div class="note-icon">💡</div>
+              <p>当"巡检任务"新记录创建时，Base 自动化触发 Webhook，实现任务的自动派发</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 适用场景 -->
+          <div class="section-header">
+            <h2 class="section-title">适用场景</h2>
+            <p class="section-desc">覆盖多行业安全合规需求</p>
+          </div>
+          <div class="scenarios-grid">
+            <div class="scenario-card">
+              <div class="scenario-number">01</div>
+              <h3 class="scenario-title">零售店铺</h3>
+              <p class="scenario-desc">灭火器、应急出口、消防栓等设施的定期检查</p>
+              <div class="scenario-tags">
+                <span class="tag">消防安全</span>
+                <span class="tag">设备检查</span>
+              </div>
+            </div>
+            <div class="scenario-card">
+              <div class="scenario-number">02</div>
+              <h3 class="scenario-title">餐饮行业</h3>
+              <p class="scenario-desc">厨房设备、卫生设施状态监控，员工卫生仪表检查</p>
+              <div class="scenario-tags">
+                <span class="tag">卫生检查</span>
+                <span class="tag">食品安全</span>
+              </div>
+            </div>
+            <div class="scenario-card">
+              <div class="scenario-number">03</div>
+              <h3 class="scenario-title">仓库安全</h3>
+              <p class="scenario-desc">货架稳定性、仓储物品规范摆放等检查</p>
+              <div class="scenario-tags">
+                <span class="tag">仓储安全</span>
+                <span class="tag">货架检查</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 任务列表页 -->
+      <section id="page-tasks" class="page">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">巡检任务</h1>
+            <p class="page-subtitle">今日待完成任务 <span class="count-badge">3</span></p>
+          </div>
+          <div class="page-actions">
+            <div class="filter-group">
+              <button class="filter-btn active">全部</button>
+              <button class="filter-btn">待完成</button>
+              <button class="filter-btn">已完成</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tasks-list">
+          <div class="task-card urgent">
+            <div class="task-priority">紧急</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">消防设备日常巡检</h3>
+                <span class="task-time">截止 12:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 3项检查</p>
+              <div class="task-items">
+                <span class="task-item">灭火器</span>
+                <span class="task-item">消防栓</span>
+                <span class="task-item">应急出口</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="navigateTo('inspect')">立即巡检</button>
+          </div>
+
+          <div class="task-card">
+            <div class="task-priority normal">常规</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">员工仪容仪表检查</h3>
+                <span class="task-time">截止 14:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 2项检查</p>
+              <div class="task-items">
+                <span class="task-item">工服穿戴</span>
+                <span class="task-item">卫生标准</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('inspect')">开始巡检</button>
+          </div>
+
+          <div class="task-card">
+            <div class="task-priority normal">常规</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">货架陈列检查</h3>
+                <span class="task-time">截止 18:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 4项检查</p>
+              <div class="task-items">
+                <span class="task-item">货架整齐度</span>
+                <span class="task-item">价签对应</span>
+                <span class="task-item">+2</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('inspect')">开始巡检</button>
+          </div>
+
+          <div class="task-card completed">
+            <div class="task-priority done">已完成</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">开店前环境检查</h3>
+                <span class="task-time">✓ 08:45 完成</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 5项检查</p>
+              <div class="task-result">
+                <span class="result-badge success">全部合格</span>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-sm">查看详情</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 拍照巡检页 -->
+      <section id="page-inspect" class="page">
+        <div class="inspect-container">
+          <div class="inspect-header">
+            <h1 class="page-title">拍照巡检</h1>
+            <p class="page-subtitle">消防设备日常巡检 · 杭州西湖店</p>
+          </div>
+
+          <div class="inspect-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 33%"></div>
+            </div>
+            <span class="progress-text">1 / 3 项已完成</span>
+          </div>
+
+          <div class="inspect-main">
+            <div class="inspect-left">
+              <div class="current-item">
+                <div class="item-badge">当前检查项</div>
+                <h2 class="item-title">消防栓</h2>
+                <p class="item-desc">请拍摄消防栓完整照片，确保封条、压力表清晰可见</p>
+                
+                <div class="item-checklist">
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    封条完好无损
+                  </div>
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    压力表指针在绿区
+                  </div>
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    水带卷放整齐
+                  </div>
+                </div>
+              </div>
+
+              <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                  <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                  </div>
+                  <p class="upload-text">点击拍照或上传图片</p>
+                  <p class="upload-hint">支持 JPG、PNG 格式</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+              </div>
+            </div>
+
+            <div class="inspect-right">
+              <div class="ai-panel">
+                <div class="ai-header">
+                  <div class="ai-avatar">
+                    <img src="logo-qf-1.CCS1gXUf.png" alt="智书企飞" style="height: 24px; width: auto;">
+                  </div>
+                  <span class="ai-name">AI 审核助手</span>
+                  <span class="ai-status online">在线</span>
+                </div>
+
+                <div class="ai-messages" id="aiMessages">
+                  <div class="ai-message">
+                    <p>您好！我是AI巡检助手。请上传消防栓的照片，我将自动为您检查以下项目：</p>
+                    <ul>
+                      <li>封条是否完好</li>
+                      <li>压力表读数是否正常</li>
+                      <li>水带是否卷放整齐</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="ai-input">
+                  <input type="text" placeholder="输入消息或上传图片..." class="ai-text-input">
+                  <button class="ai-send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="22" y1="2" x2="11" y2="13"/>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="inspect-nav">
+            <button class="btn btn-ghost">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              上一项
+            </button>
+            <div class="nav-dots">
+              <span class="nav-dot completed"></span>
+              <span class="nav-dot active"></span>
+              <span class="nav-dot"></span>
+            </div>
+            <button class="btn btn-ghost">
+              下一项
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 管理大盘页 -->
+      <section id="page-dashboard" class="page">
+        <div class="dashboard-header">
+          <div class="page-title-group">
+            <h1 class="page-title">管理大盘</h1>
+            <p class="page-subtitle">实时掌握所有门店巡检情况</p>
+          </div>
+          <div class="date-selector">
+            <button class="date-btn active">今日</button>
+            <button class="date-btn">本周</button>
+            <button class="date-btn">本月</button>
+          </div>
+        </div>
+
+        <div class="dashboard-stats">
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">156</div>
+              <div class="dash-stat-label">今日已完成</div>
+            </div>
+            <div class="dash-stat-trend up">↑ 12%</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon orange">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">23</div>
+              <div class="dash-stat-label">待处理任务</div>
+            </div>
+            <div class="dash-stat-trend down">↓ 8%</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">5</div>
+              <div class="dash-stat-label">风险预警</div>
+            </div>
+            <div class="dash-stat-trend">需关注</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">96.8%</div>
+              <div class="dash-stat-label">合格率</div>
+            </div>
+            <div class="dash-stat-trend up">↑ 2.3%</div>
+          </div>
+        </div>
+
+        <div class="dashboard-main">
+          <div class="dashboard-left">
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">门店巡检进度</h3>
+                <button class="panel-action">查看全部</button>
+              </div>
+              <div class="store-list">
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">杭州西湖店</span>
+                    <span class="store-status">8/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 80%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">上海南京路店</span>
+                    <span class="store-status">6/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 60%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">北京王府井店</span>
+                    <span class="store-status">10/10 项</span>
+                  </div>
+                  <div class="store-progress complete">
+                    <div class="store-progress-bar" style="width: 100%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">深圳福田店</span>
+                    <span class="store-status">3/10 项</span>
+                  </div>
+                  <div class="store-progress warning">
+                    <div class="store-progress-bar" style="width: 30%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">广州天河店</span>
+                    <span class="store-status">7/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 70%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">本周完成趋势</h3>
+              </div>
+              <div class="chart-container">
+                <div class="bar-chart">
+                  <div class="bar-group">
+                    <div class="bar" style="height: 60%"></div>
+                    <span class="bar-label">周一</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 80%"></div>
+                    <span class="bar-label">周二</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 45%"></div>
+                    <span class="bar-label">周三</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 90%"></div>
+                    <span class="bar-label">周四</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar active" style="height: 75%"></div>
+                    <span class="bar-label">今日</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-right">
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">风险预警</h3>
+                <span class="alert-count">5</span>
+              </div>
+              <div class="alert-list">
+                <div class="alert-item critical">
+                  <div class="alert-icon">!</div>
+                  <div class="alert-content">
+                    <p class="alert-title">深圳福田店 - 灭火器过期</p>
+                    <p class="alert-time">2小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item warning">
+                  <div class="alert-icon">⚠</div>
+                  <div class="alert-content">
+                    <p class="alert-title">上海南京路店 - 应急灯故障</p>
+                    <p class="alert-time">4小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item warning">
+                  <div class="alert-icon">⚠</div>
+                  <div class="alert-content">
+                    <p class="alert-title">杭州西湖店 - 消防通道堵塞</p>
+                    <p class="alert-time">5小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item info">
+                  <div class="alert-icon">i</div>
+                  <div class="alert-content">
+                    <p class="alert-title">广州天河店 - 员工工服不规范</p>
+                    <p class="alert-time">6小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item info">
+                  <div class="alert-icon">i</div>
+                  <div class="alert-content">
+                    <p class="alert-title">北京王府井店 - 货架标签缺失</p>
+                    <p class="alert-time">8小时前发现</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">检查类别分布</h3>
+              </div>
+              <div class="category-list">
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-red)"></div>
+                  <span class="category-name">消防安全</span>
+                  <span class="category-value">35%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-blue)"></div>
+                  <span class="category-name">卫生检查</span>
+                  <span class="category-value">28%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-green)"></div>
+                  <span class="category-name">设备状态</span>
+                  <span class="category-value">22%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-orange)"></div>
+                  <span class="category-name">员工仪表</span>
+                  <span class="category-value">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+// AI巡检系统 - 主交互逻辑
+
+// 页面导航
+function navigateTo(pageName) {
+  // 隐藏所有页面
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  
+  // 显示目标页面
+  const targetPage = document.getElementById(`page-${pageName}`);
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+  
+  // 更新导航链接状态
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.classList.remove('active');
+    if (link.dataset.page === pageName) {
+      link.classList.add('active');
+    }
+  });
+  
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 绑定导航链接点击事件
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const pageName = link.dataset.page;
+    navigateTo(pageName);
+  });
+});
+
+// 上传区域交互
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const aiMessages = document.getElementById('aiMessages');
+
+if (uploadArea && fileInput) {
+  uploadArea.addEventListener('click', () => {
+    fileInput.click();
+  });
+  
+  // 拖拽上传
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--accent-primary)';
+    uploadArea.style.background = 'var(--color-gray-50)';
+  });
+  
+  uploadArea.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--color-gray-300)';
+    uploadArea.style.background = 'var(--color-white)';
+  });
+  
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = 'var(--color-gray-300)';
+    uploadArea.style.background = 'var(--color-white)';
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFileUpload(files[0]);
+    }
+  });
+  
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+      handleFileUpload(e.target.files[0]);
+    }
+  });
+}
+
+// 处理文件上传
+function handleFileUpload(file) {
+  // 显示上传中状态
+  uploadArea.innerHTML = `
+    <div class="upload-content">
+      <div class="upload-icon uploading">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <p class="upload-text">正在分析图片...</p>
+      <p class="upload-hint">${file.name}</p>
+    </div>
+  `;
+  
+  // 模拟AI分析过程
+  setTimeout(() => {
+    showAnalysisResult(file);
+  }, 2000);
+}
+
+// 显示分析结果
+function showAnalysisResult(file) {
+  // 更新上传区域显示图片预览
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    uploadArea.innerHTML = `
+      <div class="upload-preview">
+        <img src="${e.target.result}" alt="上传的图片" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+        <p class="upload-text" style="margin-top: 12px; color: var(--color-success);">✓ 图片已上传</p>
+      </div>
+    `;
+  };
+  reader.readAsDataURL(file);
+  
+  // 添加AI分析消息
+  const resultMessage = document.createElement('div');
+  resultMessage.className = 'ai-message ai-result';
+  resultMessage.style.marginTop = '16px';
+  resultMessage.innerHTML = `
+    <p style="margin-bottom: 12px;"><strong>分析完成！</strong> 检测到以下内容：</p>
+    <div class="result-item" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 8px; background: rgba(42, 157, 143, 0.1); border-radius: 6px;">
+      <span style="color: var(--color-success); font-weight: 600;">✓</span>
+      <span>封条完好无损</span>
+    </div>
+    <div class="result-item" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 8px; background: rgba(42, 157, 143, 0.1); border-radius: 6px;">
+      <span style="color: var(--color-success); font-weight: 600;">✓</span>
+      <span>压力表指针在绿区 (1.2MPa)</span>
+    </div>
+    <div class="result-item" style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 8px; background: rgba(244, 162, 97, 0.1); border-radius: 6px;">
+      <span style="color: var(--accent-orange); font-weight: 600;">⚠</span>
+      <span>水带卷放略有松散，建议整理</span>
+    </div>
+    <p style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--color-gray-200); font-size: 0.85rem; color: var(--color-gray-600);">
+      总体评估：<strong style="color: var(--color-success);">基本合格</strong>，有1项需要改进
+    </p>
+  `;
+  
+  aiMessages.appendChild(resultMessage);
+  aiMessages.scrollTop = aiMessages.scrollHeight;
+  
+  // 更新检查项状态
+  updateChecklistItems();
+  
+  // 更新进度
+  updateProgress();
+}
+
+// 更新检查列表状态
+function updateChecklistItems() {
+  const checkItems = document.querySelectorAll('.check-item');
+  checkItems.forEach((item, index) => {
+    const icon = item.querySelector('.check-icon');
+    if (index < 2) {
+      icon.textContent = '✓';
+      icon.style.background = 'var(--color-success)';
+      icon.style.color = 'white';
+      icon.style.borderColor = 'var(--color-success)';
+    } else {
+      icon.textContent = '!';
+      icon.style.background = 'var(--accent-orange)';
+      icon.style.color = 'white';
+      icon.style.borderColor = 'var(--accent-orange)';
+    }
+  });
+}
+
+// 更新进度条
+function updateProgress() {
+  const progressFill = document.querySelector('.progress-fill');
+  const progressText = document.querySelector('.progress-text');
+  if (progressFill && progressText) {
+    progressFill.style.width = '66%';
+    progressText.textContent = '2 / 3 项已完成';
+  }
+  
+  // 更新导航点
+  const navDots = document.querySelectorAll('.nav-dot');
+  if (navDots[1]) {
+    navDots[1].classList.remove('active');
+    navDots[1].classList.add('completed');
+  }
+  if (navDots[2]) {
+    navDots[2].classList.add('active');
+  }
+}
+
+// 筛选按钮交互
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// 日期选择器交互
+document.querySelectorAll('.date-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// 添加键盘快捷键
+document.addEventListener('keydown', (e) => {
+  // 按1-4数字键快速切换页面
+  if (e.key >= '1' && e.key <= '4' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    const pages = ['home', 'tasks', 'inspect', 'dashboard'];
+    const pageIndex = parseInt(e.key) - 1;
+    if (pages[pageIndex]) {
+      navigateTo(pages[pageIndex]);
+    }
+  }
+});
+
+console.log('🚀 AI巡检系统已启动');
+console.log('💡 提示：按数字键 1-4 可快速切换页面');
+  </script>
+</body>
+</html>

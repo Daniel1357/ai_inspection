@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI巡检 — 智能拍照巡检系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏 -->
+    <nav class="nav">
+      <div class="nav-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="currentColor"/>
+            <path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="brand-text">AI巡检</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link active" data-page="home">首页</a>
+        <a href="#" class="nav-link" data-page="tasks">任务列表</a>
+        <a href="#" class="nav-link" data-page="inspect">拍照巡检</a>
+        <a href="#" class="nav-link" data-page="dashboard">管理大盘</a>
+      </div>
+      <div class="nav-user">
+        <div class="user-avatar">张</div>
+        <span class="user-name">张明 · 巡检员</span>
+      </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+      <!-- 首页 -->
+      <section id="page-home" class="page active">
+        <div class="hero">
+          <div class="hero-content">
+            <div class="hero-label">智能巡检解决方案</div>
+            <h1 class="hero-title">
+              拍照上传<br/>
+              <span class="highlight">AI帮你审核</span>
+            </h1>
+            <p class="hero-desc">
+              释放审核人力，仅需二次确认。基于人工智能多模态技术，
+              让零售、餐饮、仓储的安全合规检查变得简单高效。
+            </p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" onclick="navigateTo('inspect')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                开始巡检
+              </button>
+              <button class="btn btn-secondary" onclick="navigateTo('tasks')">
+                查看任务
+              </button>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="visual-card">
+              <div class="visual-header">
+                <div class="visual-dot"></div>
+                <div class="visual-dot"></div>
+                <div class="visual-dot"></div>
+              </div>
+              <div class="visual-content">
+                <div class="visual-item">
+                  <div class="visual-icon check">✓</div>
+                  <div class="visual-text">
+                    <span class="visual-label">灭火器检查</span>
+                    <span class="visual-status success">合格</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon check">✓</div>
+                  <div class="visual-text">
+                    <span class="visual-label">应急出口状态</span>
+                    <span class="visual-status success">合格</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon warn">!</div>
+                  <div class="visual-text">
+                    <span class="visual-label">消防栓封条</span>
+                    <span class="visual-status warning">需检查</span>
+                  </div>
+                </div>
+                <div class="visual-item">
+                  <div class="visual-icon pending">○</div>
+                  <div class="visual-text">
+                    <span class="visual-label">货架稳定性</span>
+                    <span class="visual-status pending">待检查</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 数据统计 -->
+        <div class="stats-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">98.5<span class="stat-unit">%</span></div>
+              <div class="stat-label">识别准确率</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">3<span class="stat-unit">秒</span></div>
+              <div class="stat-label">平均审核时间</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">80<span class="stat-unit">%</span></div>
+              <div class="stat-label">人力成本节省</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">全天候服务</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 功能介绍 -->
+        <div class="features-section">
+          <div class="section-header">
+            <h2 class="section-title">核心功能</h2>
+            <p class="section-desc">一站式智能巡检解决方案</p>
+          </div>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">拍照即巡检</h3>
+              <p class="feature-desc">员工只需拍照上传，AI自动识别并完成所有检查项目评估</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">智能审核</h3>
+              <p class="feature-desc">AI自动判断合规性，实时给出审核结果和修改建议</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">周期性任务</h3>
+              <p class="feature-desc">支持每日、每周自动创建巡检任务，确保不遗漏</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <line x1="18" y1="20" x2="18" y2="10"/>
+                  <line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </div>
+              <h3 class="feature-title">管理大盘</h3>
+              <p class="feature-desc">可视化仪表盘，一览所有门店巡检情况和风险预警</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 适用场景 -->
+        <div class="scenarios-section">
+          <div class="section-header">
+            <h2 class="section-title">适用场景</h2>
+            <p class="section-desc">覆盖多行业安全合规需求</p>
+          </div>
+          <div class="scenarios-grid">
+            <div class="scenario-card">
+              <div class="scenario-number">01</div>
+              <h3 class="scenario-title">零售店铺</h3>
+              <p class="scenario-desc">灭火器、应急出口、消防栓等设施的定期检查</p>
+              <div class="scenario-tags">
+                <span class="tag">消防安全</span>
+                <span class="tag">设备检查</span>
+              </div>
+            </div>
+            <div class="scenario-card">
+              <div class="scenario-number">02</div>
+              <h3 class="scenario-title">餐饮行业</h3>
+              <p class="scenario-desc">厨房设备、卫生设施状态监控，员工卫生仪表检查</p>
+              <div class="scenario-tags">
+                <span class="tag">卫生检查</span>
+                <span class="tag">食品安全</span>
+              </div>
+            </div>
+            <div class="scenario-card">
+              <div class="scenario-number">03</div>
+              <h3 class="scenario-title">仓库安全</h3>
+              <p class="scenario-desc">货架稳定性、仓储物品规范摆放等检查</p>
+              <div class="scenario-tags">
+                <span class="tag">仓储安全</span>
+                <span class="tag">货架检查</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 任务列表页 -->
+      <section id="page-tasks" class="page">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h1 class="page-title">巡检任务</h1>
+            <p class="page-subtitle">今日待完成任务 <span class="count-badge">3</span></p>
+          </div>
+          <div class="page-actions">
+            <div class="filter-group">
+              <button class="filter-btn active">全部</button>
+              <button class="filter-btn">待完成</button>
+              <button class="filter-btn">已完成</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="tasks-list">
+          <div class="task-card urgent">
+            <div class="task-priority">紧急</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">消防设备日常巡检</h3>
+                <span class="task-time">截止 12:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 3项检查</p>
+              <div class="task-items">
+                <span class="task-item">灭火器</span>
+                <span class="task-item">消防栓</span>
+                <span class="task-item">应急出口</span>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="navigateTo('inspect')">立即巡检</button>
+          </div>
+
+          <div class="task-card">
+            <div class="task-priority normal">常规</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">员工仪容仪表检查</h3>
+                <span class="task-time">截止 14:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 2项检查</p>
+              <div class="task-items">
+                <span class="task-item">工服穿戴</span>
+                <span class="task-item">卫生标准</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('inspect')">开始巡检</button>
+          </div>
+
+          <div class="task-card">
+            <div class="task-priority normal">常规</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">货架陈列检查</h3>
+                <span class="task-time">截止 18:00</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 4项检查</p>
+              <div class="task-items">
+                <span class="task-item">货架整齐度</span>
+                <span class="task-item">价签对应</span>
+                <span class="task-item">+2</span>
+              </div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="navigateTo('inspect')">开始巡检</button>
+          </div>
+
+          <div class="task-card completed">
+            <div class="task-priority done">已完成</div>
+            <div class="task-content">
+              <div class="task-header">
+                <h3 class="task-name">开店前环境检查</h3>
+                <span class="task-time">✓ 08:45 完成</span>
+              </div>
+              <p class="task-location">📍 杭州西湖店 · 5项检查</p>
+              <div class="task-result">
+                <span class="result-badge success">全部合格</span>
+              </div>
+            </div>
+            <button class="btn btn-ghost btn-sm">查看详情</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 拍照巡检页 -->
+      <section id="page-inspect" class="page">
+        <div class="inspect-container">
+          <div class="inspect-header">
+            <h1 class="page-title">拍照巡检</h1>
+            <p class="page-subtitle">消防设备日常巡检 · 杭州西湖店</p>
+          </div>
+
+          <div class="inspect-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 33%"></div>
+            </div>
+            <span class="progress-text">1 / 3 项已完成</span>
+          </div>
+
+          <div class="inspect-main">
+            <div class="inspect-left">
+              <div class="current-item">
+                <div class="item-badge">当前检查项</div>
+                <h2 class="item-title">消防栓</h2>
+                <p class="item-desc">请拍摄消防栓完整照片，确保封条、压力表清晰可见</p>
+                
+                <div class="item-checklist">
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    封条完好无损
+                  </div>
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    压力表指针在绿区
+                  </div>
+                  <div class="check-item">
+                    <span class="check-icon">○</span>
+                    水带卷放整齐
+                  </div>
+                </div>
+              </div>
+
+              <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                  <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                      <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                  </div>
+                  <p class="upload-text">点击拍照或上传图片</p>
+                  <p class="upload-hint">支持 JPG、PNG 格式</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/*" hidden>
+              </div>
+            </div>
+
+            <div class="inspect-right">
+              <div class="ai-panel">
+                <div class="ai-header">
+                  <div class="ai-avatar">
+                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none">
+                      <rect width="32" height="32" rx="8" fill="currentColor"/>
+                      <path d="M8 16L14 22L24 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <span class="ai-name">AI 审核助手</span>
+                  <span class="ai-status online">在线</span>
+                </div>
+
+                <div class="ai-messages" id="aiMessages">
+                  <div class="ai-message">
+                    <p>您好！我是AI巡检助手。请上传消防栓的照片，我将自动为您检查以下项目：</p>
+                    <ul>
+                      <li>封条是否完好</li>
+                      <li>压力表读数是否正常</li>
+                      <li>水带是否卷放整齐</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="ai-input">
+                  <input type="text" placeholder="输入消息或上传图片..." class="ai-text-input">
+                  <button class="ai-send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="22" y1="2" x2="11" y2="13"/>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="inspect-nav">
+            <button class="btn btn-ghost">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              上一项
+            </button>
+            <div class="nav-dots">
+              <span class="nav-dot completed"></span>
+              <span class="nav-dot active"></span>
+              <span class="nav-dot"></span>
+            </div>
+            <button class="btn btn-ghost">
+              下一项
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 管理大盘页 -->
+      <section id="page-dashboard" class="page">
+        <div class="dashboard-header">
+          <div class="page-title-group">
+            <h1 class="page-title">管理大盘</h1>
+            <p class="page-subtitle">实时掌握所有门店巡检情况</p>
+          </div>
+          <div class="date-selector">
+            <button class="date-btn active">今日</button>
+            <button class="date-btn">本周</button>
+            <button class="date-btn">本月</button>
+          </div>
+        </div>
+
+        <div class="dashboard-stats">
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon blue">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">156</div>
+              <div class="dash-stat-label">今日已完成</div>
+            </div>
+            <div class="dash-stat-trend up">↑ 12%</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon orange">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">23</div>
+              <div class="dash-stat-label">待处理任务</div>
+            </div>
+            <div class="dash-stat-trend down">↓ 8%</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">5</div>
+              <div class="dash-stat-label">风险预警</div>
+            </div>
+            <div class="dash-stat-trend">需关注</div>
+          </div>
+
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <div class="dash-stat-info">
+              <div class="dash-stat-number">96.8%</div>
+              <div class="dash-stat-label">合格率</div>
+            </div>
+            <div class="dash-stat-trend up">↑ 2.3%</div>
+          </div>
+        </div>
+
+        <div class="dashboard-main">
+          <div class="dashboard-left">
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">门店巡检进度</h3>
+                <button class="panel-action">查看全部</button>
+              </div>
+              <div class="store-list">
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">杭州西湖店</span>
+                    <span class="store-status">8/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 80%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">上海南京路店</span>
+                    <span class="store-status">6/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 60%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">北京王府井店</span>
+                    <span class="store-status">10/10 项</span>
+                  </div>
+                  <div class="store-progress complete">
+                    <div class="store-progress-bar" style="width: 100%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">深圳福田店</span>
+                    <span class="store-status">3/10 项</span>
+                  </div>
+                  <div class="store-progress warning">
+                    <div class="store-progress-bar" style="width: 30%"></div>
+                  </div>
+                </div>
+                <div class="store-item">
+                  <div class="store-info">
+                    <span class="store-name">广州天河店</span>
+                    <span class="store-status">7/10 项</span>
+                  </div>
+                  <div class="store-progress">
+                    <div class="store-progress-bar" style="width: 70%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">本周完成趋势</h3>
+              </div>
+              <div class="chart-container">
+                <div class="bar-chart">
+                  <div class="bar-group">
+                    <div class="bar" style="height: 60%"></div>
+                    <span class="bar-label">周一</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 80%"></div>
+                    <span class="bar-label">周二</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 45%"></div>
+                    <span class="bar-label">周三</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar" style="height: 90%"></div>
+                    <span class="bar-label">周四</span>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar active" style="height: 75%"></div>
+                    <span class="bar-label">今日</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-right">
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">风险预警</h3>
+                <span class="alert-count">5</span>
+              </div>
+              <div class="alert-list">
+                <div class="alert-item critical">
+                  <div class="alert-icon">!</div>
+                  <div class="alert-content">
+                    <p class="alert-title">深圳福田店 - 灭火器过期</p>
+                    <p class="alert-time">2小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item warning">
+                  <div class="alert-icon">⚠</div>
+                  <div class="alert-content">
+                    <p class="alert-title">上海南京路店 - 应急灯故障</p>
+                    <p class="alert-time">4小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item warning">
+                  <div class="alert-icon">⚠</div>
+                  <div class="alert-content">
+                    <p class="alert-title">杭州西湖店 - 消防通道堵塞</p>
+                    <p class="alert-time">5小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item info">
+                  <div class="alert-icon">i</div>
+                  <div class="alert-content">
+                    <p class="alert-title">广州天河店 - 员工工服不规范</p>
+                    <p class="alert-time">6小时前发现</p>
+                  </div>
+                </div>
+                <div class="alert-item info">
+                  <div class="alert-icon">i</div>
+                  <div class="alert-content">
+                    <p class="alert-title">北京王府井店 - 货架标签缺失</p>
+                    <p class="alert-time">8小时前发现</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3 class="panel-title">检查类别分布</h3>
+              </div>
+              <div class="category-list">
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-red)"></div>
+                  <span class="category-name">消防安全</span>
+                  <span class="category-value">35%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-blue)"></div>
+                  <span class="category-name">卫生检查</span>
+                  <span class="category-value">28%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-green)"></div>
+                  <span class="category-name">设备状态</span>
+                  <span class="category-value">22%</span>
+                </div>
+                <div class="category-item">
+                  <div class="category-color" style="background: var(--accent-orange)"></div>
+                  <span class="category-name">员工仪表</span>
+                  <span class="category-value">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/src/main.js"></script>
+</body>
+</html>
